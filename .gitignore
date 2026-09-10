@@ -1,0 +1,8 @@
+out/
+emul/dsk/
+*.ihx
+*.noi
+.DS_Store
+Thumbs.db
+moonblaster-1.4.dsk
+*.pdf

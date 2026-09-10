@@ -1,0 +1,77 @@
+moonplay 1.0  (MSX-DOS 2)
+=========================
+
+Documentacao completa: README.md
+Continuar no Grok Build: AGENTS.md
+
+Player DOS2 das musicas MoonBlaster 1.4 no YM2413 (MSX-MUSIC)
+e no Y8950 (MSX-AUDIO FM) se o cartucho estiver presente.
+
+  MBM = musica FM (OPLL +, se houver chip, canais AUDIO)
+  MBK = kit ADPCM do MSX-AUDIO -- ainda nao usado
+
+Nao e Moonsound/OPL4. Replay: porto de
+  https://gitlab.com/brossaip/fm_mbm_fusionc
+para MSXgl (mbm_opll.c), com tabela de frequencias, loop, EOP,
+pitch e modulacao do MBPLAY.SRC original (MoonBlaster 1.4).
+
+Maquina
+-------
+  MSX2+ / turbo R : YM2413 interno (portas 7Ch/7Dh sempre ligadas).
+                    Testado no Panasonic FS-A1ST e num MSX2+.
+  MSX2            : precisa FM-PAC / clone.
+  Panasoft SW-M004 FM-PAC: as portas 7Ch/7Dh so ligam depois do bit 0
+                    de 7FF6h no slot do cartucho (assinatura PAC2OPLL).
+                    Checkmark / Sturaro OPL3 usam APRLOPLL: I/O ja ligado.
+                    NUNCA escrever 7FF6h se houver APRLOPLL (Panasonic
+                    2+/turbo R desliga o FM interno).
+
+  Checkmark FM Stereo PAK (NMS-8255 etc.):
+    O jack 3.5mm do cartucho e pseudo-estereo de hardware:
+      um canal = melodias FM (pinos MO do YM2413)
+      outro    = bateria FM (+ por vezes PSG)
+    Ouvir no jack do cartucho em estereo (ou misturar L+R). No FM
+    interno (2+ / turbo R) MO e RO ja vem misturados.
+
+  openMSX: run_openmsx.bat        (FS-A1ST, so YM2413)
+           run_openmsx_audio.bat  (FS-A1ST + Y8950)
+
+Tempo
+-----
+  Um MBM_Tick() por VBlank. Em 50Hz europeu faz-se um tick extra
+  a cada 5 frames (x6/5) para o andamento ficar o de 60Hz.
+
+Build
+-----
+  cd C:\msxgl\projects\moon_player
+  build.bat
+
+  COM: emul\dos2\moonplay.com
+  DSK: emul\dsk\DOS2_moonplay.dsk
+
+Uso
+---
+  MOONPLAY ficheiro.MBM
+  MOONPLAY *.MBM
+  MOONPLAY A????.MBM
+  MOONPLAY 50HZ\*.MBM
+  MOONPLAY -info LUCIFER.MBM
+  MOONPLAY -loop MARIO.MBM
+  MOONPLAY /HELP
+
+  Sem opcoes: toca uma vez e sai, sem texto.
+  Wildcards * e ? pelo _FFIRST/_FNEXT do MSX-DOS 2 / Nextor
+  (a mesma ordem do DIR). Opcoes: -info /INFO, -loop /LOOP.
+  -loop numa so musica: loop interno do .MBM.
+  -loop numa lista (*.MBM): volta ao primeiro ficheiro.
+  ESPACO pausa/continua. ESC para.
+
+  A extensao .MBM e acrescentada se faltar. Pastas DOS2:
+    MOONPLAY 50HZ\ODYSSEY
+
+Limites
+-------
+  USER mode .MBM (EDIT: prefixo FFh e aceite)
+  MSX-MUSIC (canais 0-5 + drums OPLL, ou 9 canais de melodia)
+  MSX-AUDIO FM (9 canais Y8950) se IN C0h != FFh
+  Samples MBK / drums PSG: nao
